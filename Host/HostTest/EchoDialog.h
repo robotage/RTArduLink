@@ -1,22 +1,32 @@
-//
-//  Copyright (c) 2014 richards-tech
+///////////////////////////////////////////////////////////
 //
 //  This file is part of RTArduLink
 //
-//  RTArduLink is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
+//  Copyright (c) 2014 richards-tech
 //
-//  RTArduLink is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
+//  Permission is hereby granted, free of charge,
+//  to any person obtaining a copy of
+//  this software and associated documentation files
+//  (the "Software"), to deal in the Software without
+//  restriction, including without limitation the rights
+//  to use, copy, modify, merge, publish, distribute,
+//  sublicense, and/or sell copies of the Software, and
+//  to permit persons to whom the Software is furnished
+//  to do so, subject to the following conditions:
 //
-//  You should have received a copy of the GNU General Public License
-//  along with RTArduLink.  If not, see <http://www.gnu.org/licenses/>.
+//  The above copyright notice and this permission notice
+//  shall be included in all copies or substantial portions
+//  of the Software.
 //
-
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF
+//  ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+//  TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+//  PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+//  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+//  CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+//  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+//  IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+//  DEALINGS IN THE SOFTWARE.
 
 #ifndef _ECHODIALOG_H
 #define _ECHODIALOG_H
@@ -27,51 +37,51 @@
 
 #include "HostTestEcho.h"
 
-#define	ECHODIALOG_COL_PORT				0					
-#define	ECHODIALOG_COL_ADDRESS			1					
-#define	ECHODIALOG_COL_IDENTITY			2					
-#define	ECHODIALOG_COL_ECHOCOUNT		3					
-#define	ECHODIALOG_COL_ECHORATE			4
-#define	ECHODIALOG_COL_TIMEOUTS			5
+#define	ECHODIALOG_COL_PORT             0
+#define	ECHODIALOG_COL_ADDRESS          1
+#define	ECHODIALOG_COL_IDENTITY         2
+#define	ECHODIALOG_COL_ECHOCOUNT        3
+#define	ECHODIALOG_COL_ECHORATE         4
+#define	ECHODIALOG_COL_TIMEOUTS         5
 
-#define	ECHODIALOG_COL_COUNT			6
+#define	ECHODIALOG_COL_COUNT            6
 
 typedef struct
 {
-	QString identity;										// identity for this data
-	qint64 echoCount;										// number of good echos
-	qint64 echoTimeouts;									// number of timeouts
-	qint64 echoTempCount;									// temp count for rate calculation
+    QString identity;                                       // identity for this data
+    qint64 echoCount;                                       // number of good echos
+    qint64 echoTimeouts;                                    // number of timeouts
+    qint64 echoTempCount;                                   // temp count for rate calculation
 } ECHODIALOG_DATA;
 
 class EchoDialog : public QDialog
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	EchoDialog(QWidget *parent = 0);
-	~EchoDialog() {}
+    EchoDialog(QWidget *parent = 0);
+    ~EchoDialog() {}
 
 public slots:
-	void updateEchoStatus(int index, int port, int address, QString&, bool goodEcho);
+    void updateEchoStatus(int index, int port, int address, QString&, bool goodEcho);
 
 signals:
-	void echoStart();
-	void echoStop();
+    void echoStart();
+    void echoStop();
 
 protected:
-	void closeEvent(QCloseEvent *event);
+    void closeEvent(QCloseEvent *event);
 
-	int m_timerID;
-	void timerEvent(QTimerEvent *event);
+    int m_timerID;
+    void timerEvent(QTimerEvent *event);
 
 
 private:
-	QTableWidget *m_table;
+    QTableWidget *m_table;
 
-	ECHODIALOG_DATA m_echoData[HOSTECHO_MAX_SUBSYSTEMS];	// row map array
+    ECHODIALOG_DATA m_echoData[HOSTECHO_MAX_SUBSYSTEMS];    // row map array
 
-	bool m_running;
+    bool m_running;
 };
 
 

@@ -1,24 +1,35 @@
-//
-//  Copyright (c) 2014 richards-tech
+///////////////////////////////////////////////////////////
 //
 //  This file is part of RTArduLink
 //
-//  RTArduLink is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
+//  Copyright (c) 2014 richards-tech
 //
-//  RTArduLink is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
+//  Permission is hereby granted, free of charge,
+//  to any person obtaining a copy of
+//  this software and associated documentation files
+//  (the "Software"), to deal in the Software without
+//  restriction, including without limitation the rights
+//  to use, copy, modify, merge, publish, distribute,
+//  sublicense, and/or sell copies of the Software, and
+//  to permit persons to whom the Software is furnished
+//  to do so, subject to the following conditions:
 //
-//  You should have received a copy of the GNU General Public License
-//  along with RTArduLink.  If not, see <http://www.gnu.org/licenses/>.
+//  The above copyright notice and this permission notice
+//  shall be included in all copies or substantial portions
+//  of the Software.
 //
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF
+//  ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+//  TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+//  PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+//  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+//  CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+//  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+//  IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+//  DEALINGS IN THE SOFTWARE.
 
-#ifndef RTARDULINKHOSTTEST_H
-#define RTARDULINKHOSTTEST_H
+#ifndef HOSTTEST_H
+#define HOSTTEST_H
 
 #include <QMainWindow>
 #include "ui_HostTest.h"
@@ -32,72 +43,71 @@
 
 #include "HostTestEcho.h"
 
+#define	RTARDULINK_COL_PORT             0
+#define	RTARDULINK_COL_ADDRESS          1
+#define	RTARDULINK_COL_STATUS           2
+#define	RTARDULINK_COL_IDENTITY         3
+#define	RTARDULINK_COL_POLLSIN          4
+#define	RTARDULINK_COL_POLLSOUT         5
 
-#define	RTARDULINK_COL_PORT				0					
-#define	RTARDULINK_COL_ADDRESS			1					
-#define	RTARDULINK_COL_STATUS			2					
-#define	RTARDULINK_COL_IDENTITY			3					
-#define	RTARDULINK_COL_POLLSIN			4					
-#define	RTARDULINK_COL_POLLSOUT			5
+#define	RTARDULINK_COL_COUNT            6
 
-#define	RTARDULINK_COL_COUNT			6
-
-#define RTARDULINKHOST_SETTINGS_NAME	"ports"
-#define	RTARDULINKHOST_SETTINGS_PORT	"port"
-#define	RTARDULINKHOST_SETTINGS_SPEED	"speed"
+#define RTARDULINKHOST_SETTINGS_NAME    "ports"
+#define	RTARDULINKHOST_SETTINGS_PORT    "port"
+#define	RTARDULINKHOST_SETTINGS_SPEED   "speed"
 
 class RTArduLinkHost;
 
 class HostTest : public QMainWindow
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	HostTest(QWidget *parent = 0);
-	~HostTest();
+    HostTest(QWidget *parent = 0);
+    ~HostTest();
 
-	int m_row[RTARDULINKHOST_MAX_PORTS][RTARDULINK_ADDRESSES];	// row map array
-	int m_nextRow;											// next row to be allocated
+    int m_row[RTARDULINKHOST_MAX_PORTS][RTARDULINK_ADDRESSES];  // row map array
+    int m_nextRow;                                          // next row to be allocated
 
 public slots:
-	void startButton();
-	void stopButton();
-	void echoButton();
-	void RTArduLinkStatus(int port, int address, bool active, char *identity, qint64 pollsIn, qint64 pollsOut);
-	void RTArduLinkPortOpen(int port);				
-	void RTArduLinkPortClosed(int port);	
-	void RTArduLinkPortTX(int port);
-	void RTArduLinkPortRX(int port);
+    void startButton();
+    void stopButton();
+    void echoButton();
+    void RTArduLinkStatus(int port, int address, bool active, char *identity, qint64 pollsIn, qint64 pollsOut);
+    void RTArduLinkPortOpen(int port);
+    void RTArduLinkPortClosed(int port);
+    void RTArduLinkPortTX(int port);
+    void RTArduLinkPortRX(int port);
 
 protected:
-	void timerEvent(QTimerEvent *event);
-	void populateComPorts(int port);
+    void timerEvent(QTimerEvent *event);
+    void populateComPorts(int port);
 
 private:
-	HostTestEcho *m_link;
+    HostTestEcho *m_link;
 
-	Ui::HostTestClass ui;
+    Ui::HostTestClass ui;
 
-	void layoutWindow();
-	void updateComState(int index, bool open);
-	void updateComRXTX(QLabel *label, bool active);
-	void loadSettings();
-	void saveSettings();
+    void layoutWindow();
+    void updateComState(int index, bool open);
+    void updateComRXTX(QLabel *label, bool active);
+    void loadSettings();
+    void saveSettings();
 
-	QSettings *m_settings;
-	QLabel *m_comLabel[RTARDULINKHOST_MAX_PORTS];
-	QLabel *m_comRXLabel[RTARDULINKHOST_MAX_PORTS];
-	QLabel *m_comTXLabel[RTARDULINKHOST_MAX_PORTS];
-	QComboBox *m_comPort[RTARDULINKHOST_MAX_PORTS];
-	QComboBox *m_comSpeed[RTARDULINKHOST_MAX_PORTS];
-	QPushButton *m_startButton;
-	QPushButton *m_stopButton;
-	QPushButton *m_echoButton;
-	QTableWidget *m_subsystemStatus;
+    QSettings *m_settings;
+    QLabel *m_comLabel[RTARDULINKHOST_MAX_PORTS];
+    QLabel *m_comRXLabel[RTARDULINKHOST_MAX_PORTS];
+    QLabel *m_comTXLabel[RTARDULINKHOST_MAX_PORTS];
+    QComboBox *m_comPort[RTARDULINKHOST_MAX_PORTS];
+    QComboBox *m_comSpeed[RTARDULINKHOST_MAX_PORTS];
+    QPushButton *m_startButton;
+    QPushButton *m_stopButton;
+    QPushButton *m_echoButton;
+    QTableWidget *m_subsystemStatus;
 
-	bool m_running;
-	int m_timerID;
+    bool m_running;
+    int m_timerID;
 
 };
 
-#endif // RTARDULINKHOSTTEST_H
+#endif // HOSTTEST_H
