@@ -64,7 +64,8 @@ bool RTArduLinkReassemble(RTARDULINK_RXFRAME *RXFrame, unsigned char data)
             break;
 
         case 2:                                             // should be message length
-            if (RXFrame->frameBuffer->messageLength <= RTARDULINK_MESSAGE_MAX_LEN) {
+            if ((RXFrame->frameBuffer->messageLength <= RTARDULINK_MESSAGE_MAX_LEN) &&
+                (RXFrame->frameBuffer->messageLength >= RTARDULINK_MESSAGE_HEADER_LEN)) {
                 RXFrame->length = 3;
                 RXFrame->bytesLeft = RXFrame->frameBuffer->messageLength + 1;   // +1 to allow for the checksum
             } else {
@@ -158,7 +159,7 @@ int RTArduLinkConvertUC2ToInt(RTARDULINK_UC2 UC2)
 
 unsigned int RTArduLinkConvertUC2ToUInt(RTARDULINK_UC2 UC2)
 {
-    int val;
+    unsigned int val;
 
     val = UC2[1];
     val += (unsigned int)UC2[0] << 8;

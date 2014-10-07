@@ -81,8 +81,8 @@ void HostDemo::sendCommand()
 
     for (channel = 0; channel < SERVO_COUNT; channel++) {
         servoChannel = m_servo + channel;
-        servoChannel->sliderPos = servoChannel->slider.value();
-        servoChannel->sliderLabel.setText(QString::number(servoChannel->sliderPos));
+        servoChannel->sliderPos = servoChannel->slider->value();
+        servoChannel->sliderLabel->setText(QString::number(servoChannel->sliderPos));
         RTArduLinkConvertIntToUC2(servoChannel->sliderPos, command.servoPos[channel]);
     }
 
@@ -90,11 +90,11 @@ void HostDemo::sendCommand()
 
     for (channel = 0; channel < PWM_COUNT; channel++) {
         pwmChannel = m_pwm + channel;
-        pwmChannel->sliderPos = pwmChannel->slider.value();
-        pwmChannel->sliderLabel.setText(QString::number(pwmChannel->sliderPos));
+        pwmChannel->sliderPos = pwmChannel->slider->value();
+        pwmChannel->sliderLabel->setText(QString::number(pwmChannel->sliderPos));
         command.pwmValue[channel] = pwmChannel->sliderPos;
     }
-    m_link->sendMessage(0, m_address, RTARDULINK_MESSAGE_CUSTOM, (unsigned char *)&command,
+    m_link->sendMessage(0, m_address, RTARDULINK_MESSAGE_CUSTOM, 0, (unsigned char *)&command,
                         sizeof(RTARDULINKDEMO_COMMAND));
 }
 
@@ -339,11 +339,13 @@ void HostDemo::layoutServoChannel(int channel, QVBoxLayout *vLayout)
     label->setMinimumWidth(100);
     hLayout->addWidget(label);
 
-    servoChannel->sliderLabel.setText(QString::number(SERVO_CTR_VALUE));
-    servoChannel->sliderLabel.setMinimumWidth(30);
-    hLayout->addWidget(&(servoChannel->sliderLabel));
+    servoChannel->sliderLabel = new QLabel();
+    servoChannel->sliderLabel->setText(QString::number(SERVO_CTR_VALUE));
+    servoChannel->sliderLabel->setMinimumWidth(30);
+    hLayout->addWidget(servoChannel->sliderLabel);
 
-    slider = &(servoChannel->slider);
+    servoChannel->slider = new QSlider();
+    slider = servoChannel->slider;
     slider->setOrientation(Qt::Horizontal);
     hLayout->addWidget(slider);
     slider->setMinimumWidth(150);
@@ -370,11 +372,13 @@ void HostDemo::layoutPWMChannel(int channel, QVBoxLayout *vLayout)
     label->setMinimumWidth(100);
     hLayout->addWidget(label);
 
-    pwmChannel->sliderLabel.setText(QString::number(PWM_CTR_VALUE));
-    pwmChannel->sliderLabel.setMinimumWidth(30);
-    hLayout->addWidget(&(pwmChannel->sliderLabel));
+    pwmChannel->sliderLabel = new QLabel();
+    pwmChannel->sliderLabel->setText(QString::number(PWM_CTR_VALUE));
+    pwmChannel->sliderLabel->setMinimumWidth(30);
+    hLayout->addWidget(pwmChannel->sliderLabel);
 
-    slider = &(pwmChannel->slider);
+    pwmChannel->slider = new QSlider();
+    slider = pwmChannel->slider;
     slider->setOrientation(Qt::Horizontal);
     hLayout->addWidget(slider);
     slider->setMinimumWidth(150);

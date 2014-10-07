@@ -74,10 +74,13 @@ void RTArduLink::background()
             continue;
 
         while (RTArduLinkHALPortAvailable(&(portInfo->portHAL))) {
-            RTArduLinkReassemble(&(portInfo->RXFrame), RTArduLinkHALPortRead(&(portInfo->portHAL)));
-            if (portInfo->RXFrame.complete) {
-                processReceivedMessage(portInfo);
-                RTArduLinkRXFrameInit(&(portInfo->RXFrame), &(portInfo->RXFrameBuffer));
+            if (!RTArduLinkReassemble(&(portInfo->RXFrame), RTArduLinkHALPortRead(&(portInfo->portHAL)))) {
+                sendDebugMessage("Reassembly error");
+            } else {
+                if (portInfo->RXFrame.complete) {
+                    processReceivedMessage(portInfo);
+                    RTArduLinkRXFrameInit(&(portInfo->RXFrame), &(portInfo->RXFrameBuffer));
+                }
             }
         }
     }
@@ -86,10 +89,10 @@ void RTArduLink::background()
 void RTArduLink::processReceivedMessage(RTARDULINK_PORT *portInfo)
 {
     RTARDULINK_MESSAGE *message;                            // a pointer to the message part of the frame
-    unsigned char address;
+    unsigned int address;
 
     message = &(portInfo->RXFrameBuffer.message);           // get the message pointer
-    address = message->messageAddress;
+    address = RTArduLinkConvertUC2ToUInt(message->messageAddress);
 
     switch (portInfo->index) {
         case  RTARDULINK_HOST_PORT:
@@ -98,13 +101,13 @@ void RTArduLink::processReceivedMessage(RTARDULINK_PORT *portInfo)
 
         case RTARDULINK_DAISY_PORT:                         // came from dasiy chain port
             if (address != RTARDULINK_HOST_PORT)            // true if it came from a daisy chained subsystem, not a directly connected subsystem
-                message->messageAddress += RTARDULINKHAL_MAX_PORTS; // add on the offset
-            else
-                message->messageAddress = RTARDULINK_DAISY_PORT;    // set message address to be the port index
+                RTArduLinkConvertIntToUC2(address + RTARDULINKHAL_MAX_PORTS, message->messageAddress);
+             else
+                RTArduLinkConvertIntToUC2(RTARDULINK_DAISY_PORT, message->messageAddress);
             break;
 
         default:
-            message->messageAddress += portInfo->index;     // the port index is the address
+            RTArduLinkConvertIntToUC2(address + portInfo->index, message->messageAddress);
             break;
     }
 
@@ -119,10 +122,10 @@ void RTArduLink::processHostMessage()
     RTARDULINK_MESSAGE *message;                            // a pointer to the message part of the frame
     int identityLength;
     int suffixLength;
-    unsigned char address;
+    unsigned int address;
 
     message = &(m_hostPort->RXFrameBuffer.message);         // get the message pointer
-    address = message->messageAddress;
+    address = RTArduLinkConvertUC2ToUInt(message->messageAddress);
 
     if (address == RTARDULINK_BROADCAST_ADDRESS) {          // need to forward to downstream ports also
         for (int i = RTARDULINK_HOST_PORT + 1; i < RTARDULINKHAL_MAX_PORTS; i++) {
@@ -134,7 +137,8 @@ void RTArduLink::processHostMessage()
         switch (message->messageType)
         {
             case RTARDULINK_MESSAGE_POLL:
-                message->messageAddress = RTARDULINK_MY_ADDRESS;
+            case RTARDULINK_MESSAGE_ECHO:
+                RTArduLinkConvertIntToUC2(RTARDULINK_MY_ADDRESS, message->messageAddress);
                 sendFrame(m_hostPort, &(m_hostPort->RXFrameBuffer), m_hostPort->RXFrameBuffer.messageLength);   // just send the frame back as received
                 break;
 
@@ -149,7 +153,7 @@ void RTArduLink::processHostMessage()
                 } else {
                     suffixLength = 0;
                 }
-                message->messageAddress = RTARDULINK_MY_ADDRESS;
+                RTArduLinkConvertIntToUC2(RTARDULINK_MY_ADDRESS, message->messageAddress);
                 message->data[RTARDULINK_DATA_MAX_LEN - 1] = 0;     // make sure zero terminated if it was truncated
                 sendFrame(m_hostPort, &(m_hostPort->RXFrameBuffer), RTARDULINK_MESSAGE_HEADER_LEN + identityLength + suffixLength + 1);
                 break;
@@ -159,11 +163,12 @@ void RTArduLink::processHostMessage()
                     message->data[0] = RTARDULINK_RESPONSE_ILLEGAL_COMMAND;
                     message->data[1] = message->messageType;        // this is the offending code
                     message->messageType = RTARDULINK_MESSAGE_ERROR;
-                    message->messageAddress = RTARDULINK_MY_ADDRESS;
+                    RTArduLinkConvertIntToUC2(RTARDULINK_MY_ADDRESS, message->messageAddress);
                     sendFrame(m_hostPort, &(m_hostPort->RXFrameBuffer), RTARDULINK_MESSAGE_HEADER_LEN + 2);
                     break;
                 }
-                processCustomMessage(message, m_hostPort->RXFrameBuffer.messageLength);	// see if anyone wants to process it
+                processCustomMessage(message->messageType, message->messageParam, message->data,
+                        m_hostPort->RXFrameBuffer.messageLength - RTARDULINK_MESSAGE_HEADER_LEN);	// see if anyone wants to process it
                 break;
         }
         return;
@@ -172,7 +177,7 @@ void RTArduLink::processHostMessage()
     if (address >= RTARDULINKHAL_MAX_PORTS) {               // need to pass it to the first subsystem
         if (!m_ports[RTARDULINK_DAISY_PORT].inUse)
             return;                                         // there is no daisy chain port
-        message->messageAddress = address - RTARDULINKHAL_MAX_PORTS; // adjust the address
+        RTArduLinkConvertIntToUC2(address - RTARDULINKHAL_MAX_PORTS, message->messageAddress); // adjust the address
         sendFrame(m_ports +RTARDULINK_DAISY_PORT, &(m_hostPort->RXFrameBuffer), m_hostPort->RXFrameBuffer.messageLength);
         return;
     }
@@ -180,7 +185,7 @@ void RTArduLink::processHostMessage()
     // if get here, needs to go to a local subsystem port
 
     if (m_ports[address].inUse) {
-        message->messageAddress = 0;                        // indicates that the target should process it
+        RTArduLinkConvertIntToUC2(0, message->messageAddress);     // indicates that the target should process it
         sendFrame(m_ports + address, &(m_hostPort->RXFrameBuffer), m_hostPort->RXFrameBuffer.messageLength);
     }
 }
@@ -196,20 +201,23 @@ void RTArduLink::sendDebugMessage(const char *debugMessage)
     memcpy(frame.message.data, debugMessage, stringLength);
     frame.message.data[stringLength] = 0;
     frame.message.messageType = RTARDULINK_MESSAGE_DEBUG;
-    frame.message.messageAddress = RTARDULINK_MY_ADDRESS;
+    RTArduLinkConvertIntToUC2(RTARDULINK_MY_ADDRESS, frame.message.messageAddress);
     sendFrame(m_hostPort, &frame, RTARDULINK_MESSAGE_HEADER_LEN + stringLength + 1);
 }
 
-void RTArduLink::sendMessage(RTARDULINK_MESSAGE *message, int length)
+void RTArduLink::sendMessage(unsigned char messageType, unsigned char messageParam, unsigned char *data, int length)
 {
     RTARDULINK_FRAME frame;
+  
+    RTArduLinkConvertIntToUC2(RTARDULINK_MY_ADDRESS, frame.message.messageAddress);
+    frame.message.messageType = messageType;
+    frame.message.messageParam = messageParam;
 
-    message->messageAddress = RTARDULINK_MY_ADDRESS;
-    if (length > RTARDULINK_MESSAGE_MAX_LEN)
-        length = RTARDULINK_MESSAGE_MAX_LEN;
-    frame.message = *message;
+    if (length > RTARDULINK_DATA_MAX_LEN)
+        length = RTARDULINK_DATA_MAX_LEN;
+    memcpy(frame.message.data, data, length);
 
-    sendFrame(m_hostPort, &frame, length);
+    sendFrame(m_hostPort, &frame, length + RTARDULINK_MESSAGE_HEADER_LEN);
 }
 
 void RTArduLink::sendFrame(RTARDULINK_PORT *portInfo, RTARDULINK_FRAME *frame, int length)

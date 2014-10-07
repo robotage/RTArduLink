@@ -50,8 +50,8 @@ HostDemoClient::~HostDemoClient()
 //  This functions processes response from the subsystem. It emits a series of signals
 //  to update the input states.
 
-void HostDemoClient::processCustomMessage(RTARDULINKHOST_PORT *portInfo, int messageAddress,
-                        int messageType, unsigned char *data, int dataLength)
+void HostDemoClient::processCustomMessage(RTARDULINKHOST_PORT *portInfo, unsigned int messageAddress,
+                        unsigned char messageType, unsigned char /* messageParam */, unsigned char *data, int dataLength)
 {
     int port;
     RTARDULINKDEMO_RESPONSE *response;

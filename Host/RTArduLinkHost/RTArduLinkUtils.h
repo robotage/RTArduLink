@@ -45,7 +45,7 @@ bool RTArduLinkCheckChecksum(RTARDULINK_FRAME *frame);      // checks the checks
 
 //  Type conversion utilities
 
-int	 RTArduLinkConvertUC4ToInt(RTARDULINK_UC4 uc4);         // converts a 4 byte array to a signed long
+long RTArduLinkConvertUC4ToLong(RTARDULINK_UC4 uc4);        // converts a 4 byte array to a signed long
 void RTArduLinkConvertLongToUC4(long val, RTARDULINK_UC4 uc4);  // converts a long to a four byte array
 int	 RTArduLinkConvertUC2ToInt(RTARDULINK_UC2 uc2);         // converts a 2 byte array to a signed integer
 unsigned int RTArduLinkConvertUC2ToUInt(RTARDULINK_UC2 uc2);// converts a 2 byte array to an unsigned integer

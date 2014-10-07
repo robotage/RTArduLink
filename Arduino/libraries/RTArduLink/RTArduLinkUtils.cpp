@@ -80,9 +80,10 @@ bool RTArduLinkReassemble(RTARDULINK_RXFRAME *RXFrame, unsigned char data)
                 if (!RTArduLinkCheckChecksum(RXFrame->frameBuffer)) {
                     RTArduLinkRXFrameInit(RXFrame, RXFrame->frameBuffer);
                     flag = false;                           // flag the error
+                } else {
+                    //  this is a valid frame (so far)
+                    RXFrame->complete = true;
                 }
-                //  this is a valid frame (so far)
-                RXFrame->complete = true;
             }
             break;
     }
@@ -158,7 +159,7 @@ int RTArduLinkConvertUC2ToInt(RTARDULINK_UC2 UC2)
 
 unsigned int RTArduLinkConvertUC2ToUInt(RTARDULINK_UC2 UC2)
 {
-    int val;
+    unsigned int val;
 
     val = UC2[1];
     val += (unsigned int)UC2[0] << 8;

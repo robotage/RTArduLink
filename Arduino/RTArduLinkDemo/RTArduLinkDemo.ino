@@ -37,7 +37,6 @@
 #include <Servo.h>
 
 #include "RTArduLinkDemo.h"
-#include "RTArduLinkDemoDefs.h"
 
 RTArduLinkDemo rtarduDemo;
 
@@ -70,7 +69,7 @@ void setup()
     // Set up PWM channels
 
     for (int i = 0; i < PWM_COUNT; i++) {
-        pinMode(pwmPins[i], OUTPUT);
+        analogWrite(pwmPins[i], 128);
     }
 
     // Set up Input channels
@@ -94,28 +93,30 @@ void setup()
 
 void loop()
 {
+    // this needs to be called once per loop
     rtarduDemo.background();
 }
 
 //    Process a received message - should be a command
 
-void RTArduLinkDemo::processCustomMessage(RTARDULINK_MESSAGE *message, int length)
+void RTArduLinkDemo::processCustomMessage(unsigned char messageType, unsigned char messageParam,
+                    unsigned char *data, int length)
 {
     RTARDULINKDEMO_COMMAND *command;
-    RTARDULINKDEMO_RESPONSE *response;
+    RTARDULINKDEMO_RESPONSE response;
     int i;
 
-    if (message->messageType != RTARDULINK_MESSAGE_CUSTOM) {
+    if (messageType != RTARDULINK_MESSAGE_CUSTOM) {
         sendDebugMessage("Wrong command type");
         return;
     }
 
-    if (length != ((int)sizeof(RTARDULINKDEMO_COMMAND) + RTARDULINK_MESSAGE_HEADER_LEN)) {
+    if (length != (int)sizeof(RTARDULINKDEMO_COMMAND)) {
         sendDebugMessage("Command wrong length");
         return;
     }
 
-    command = (RTARDULINKDEMO_COMMAND *)message->data;      // this should contain the command
+    command = (RTARDULINKDEMO_COMMAND *)data;          // this should contain the command
 
     //    set all peripherals to correct values
 
@@ -136,17 +137,13 @@ void RTArduLinkDemo::processCustomMessage(RTARDULINK_MESSAGE *message, int lengt
 
     //    Now build response message
 
-    response = (RTARDULINKDEMO_RESPONSE *)message->data;
-
     for (i = 0; i < OUTPUT_COUNT; i++) {
         if (digitalRead(inputPins[i]) == HIGH)
-            response->inputValue[i] = true;
+            response.inputValue[i] = true;
         else
-            response->inputValue[i] = false;
+            response.inputValue[i] = false;
     }
-
-    message->messageType = RTARDULINK_MESSAGE_CUSTOM + 1;    // respond with this type
-    sendMessage(message, sizeof(RTARDULINKDEMO_RESPONSE) + RTARDULINK_MESSAGE_HEADER_LEN);
+    sendMessage(RTARDULINK_MESSAGE_CUSTOM + 1, 0, (unsigned char *)(&response), sizeof(RTARDULINKDEMO_RESPONSE));
 }
 
 

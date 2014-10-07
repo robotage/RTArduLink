@@ -68,8 +68,9 @@ void HostTestEcho::processBackground()
     }
 }
 
-void HostTestEcho::processCustomMessage(RTARDULINKHOST_PORT *portInfo, int messageAddress,
-                        int messageType, unsigned char * /* data */, int /* dataLength */)
+void HostTestEcho::processCustomMessage(RTARDULINKHOST_PORT *portInfo, unsigned int messageAddress,
+                 unsigned char messageType, unsigned char /* messageParam */, unsigned char * /* data */, int /* dataLength */)
+
 {
     int port;
     HOSTECHO_DATA *echoData;
@@ -79,7 +80,7 @@ void HostTestEcho::processCustomMessage(RTARDULINKHOST_PORT *portInfo, int messa
 
     port = portInfo->index;
 
-    if (messageType != RTARDULINK_MESSAGE_CUSTOM + 1) {
+    if (messageType != RTARDULINK_MESSAGE_ECHO) {
         qDebug() << QString("Received unexpected message type %1 from port %2 address %3")
             .arg(messageType).arg(port).arg(messageAddress);
         return;
@@ -198,8 +199,8 @@ HOSTECHO_DATA *HostTestEcho::getFreeEchoSlot()
 
 void HostTestEcho::sendEcho(HOSTECHO_DATA *echoData)
 {
-    sendMessage(echoData->port, echoData->address, RTARDULINK_MESSAGE_CUSTOM,
-                        m_echoPayload, RTARDULINK_DATA_MAX_LEN);
+    sendMessage(echoData->port, echoData->address, RTARDULINK_MESSAGE_ECHO,
+                        0, m_echoPayload, RTARDULINK_DATA_MAX_LEN);
     echoData->lastSendTime = m_now;
 }
 

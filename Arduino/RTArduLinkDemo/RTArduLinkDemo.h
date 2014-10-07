@@ -46,7 +46,8 @@ class RTArduLinkDemo : public RTArduLink
 {
 
 protected:
-    void processCustomMessage(RTARDULINK_MESSAGE *message, int length);
+     void processCustomMessage(unsigned char messageType, 
+        unsigned char messageParam, unsigned char *data, int dataLength);
 
 };
 

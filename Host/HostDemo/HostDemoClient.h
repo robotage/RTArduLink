@@ -47,8 +47,8 @@ signals:
     void updateInputStatus(int inputNumber, bool value);
 
 protected:
-    void processCustomMessage(RTARDULINKHOST_PORT *portInfo, int messageAddress,
-                        int messageType, unsigned char *data, int dataLength);
+    void processCustomMessage(RTARDULINKHOST_PORT *portInfo, unsigned int messageAddress,
+                        unsigned char messageType, unsigned char messageParam, unsigned char *data, int dataLength);
 
 private:
 

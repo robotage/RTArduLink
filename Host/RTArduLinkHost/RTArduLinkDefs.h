@@ -95,7 +95,7 @@ extern unsigned long RTArduLinkSpeedMap[];
 
 #define	RTARDULINK_FRAME_MAX_LEN        64                  // maximum possible length of a frame
 #define	RTARDULINK_FRAME_HEADER_LEN     4                   // 4 bytes in frame header (must correspond with the structure below!)
-#define	RTARDULINK_MESSAGE_HEADER_LEN   2                   // 2 bytes in message header (must correspond with the structure below!)
+#define	RTARDULINK_MESSAGE_HEADER_LEN   4                   // 4 bytes in message header (must correspond with the structure below!)
 #define	RTARDULINK_MESSAGE_MAX_LEN      (RTARDULINK_FRAME_MAX_LEN - RTARDULINK_FRAME_HEADER_LEN)    // max length of message
 #define	RTARDULINK_DATA_MAX_LEN         (RTARDULINK_MESSAGE_MAX_LEN - RTARDULINK_MESSAGE_HEADER_LEN)// max length of data field
 
@@ -103,19 +103,20 @@ extern unsigned long RTArduLinkSpeedMap[];
 #define	RTARDULINK_MESSAGE_SYNC1        0x55
 
 #define	RTARDULINK_MY_ADDRESS           0                   // the subsystem address for local processing
-#define	RTARDULINK_BROADCAST_ADDRESS    0xff                // the subsystem address for all subsystems
-#define	RTARDULINK_ADDRESSES            0xff                // number of addresses (0 to 0xfe)
+#define	RTARDULINK_BROADCAST_ADDRESS    0xffff              // the subsystem address for all subsystems
+#define	RTARDULINK_ADDRESSES            0x1000              // number of addresses
 
 //  RTARDULINK_MESSAGE is carried in the RTARDULINK_FRAME
 //
-//  The messageAddress field allows subsystems to be daisy-chained. Valid addresses are 0 to 254.
-//  Address 255 is a broadcast and goes to all subsystems.
-//  Every message has the messageType and messageParam bytes but there can be from 0 to 58 bytes of data
+//  The messageAddress field allows subsystems to be daisy-chained. Valid addresses are 0 to 65534.
+//  Address 65535 is a broadcast and goes to all subsystems.
+//  Every message has the messageType and messageParam bytes but there can be from 0 to 56 bytes of data
 
 typedef struct
 {
-    unsigned char messageAddress;                           // subsystem message address
+    RTARDULINK_UC2 messageAddress;                          // subsystem message address
     unsigned char messageType;                              // message type code
+    unsigned char messageParam;                             // an optional parameter to the message type
     unsigned char data[RTARDULINK_DATA_MAX_LEN];            // the actual data! Length is computed from messageLength.
 } RTARDULINK_MESSAGE;
 
@@ -125,12 +126,12 @@ typedef struct
 {
     unsigned char sync0;                                    // sync0 code
     unsigned char sync1;                                    // sync1 code
-    unsigned char messageLength;                            // the length of the message in the message field - between 2 and 60 bytes
+    unsigned char messageLength;                            // the length of the message in the message field - between 4 and 60 bytes
     unsigned char frameChecksum;                            // checksum for frame
     RTARDULINK_MESSAGE message;                             // the actual message
 } RTARDULINK_FRAME;
 
-//  RTARDULINK_RXFRAME is a type that is used to reassemble a frame from a stream of bytes in conjunction with RCPReassemble()
+//  RTARDULINK_RXFRAME is a type that is used to reassemble a frame from a stream of bytes in conjunction with RTArduLinkReassemble()
 
 typedef struct
 {
@@ -157,18 +158,31 @@ typedef struct
 
 #define	RTARDULINK_MESSAGE_IDENTITY     1                   // identity message
 
-//  RTARDULINK_MESSAGE_ILLEGAL_TYPE
-//
-//  This code is returned by the subsystem if it received a message with an illegal message type
-//  The first byte of the data is the error code. The rest of the data field depends on the error.
-
-#define	RTARDULINK_MESSAGE_ERROR        8                   // illegal message type response
-
 //  RTARDULINK_MESSAGE_DEBUG
 //
 //  This can be used to send a debug message up to the host. The data field contains a debug message
 
-#define	RTARDULINK_MESSAGE_DEBUG        8                   // debug message
+#define	RTARDULINK_MESSAGE_DEBUG        2                   // debug message
+
+//  RTARDULINK_MESSAGE_INFO
+//
+//  This can be used to send an info message up to the host. The data field contains the message
+
+#define	RTARDULINK_MESSAGE_INFO         3                   // info message
+
+//  RTARDULINK_MESSAGE_ERROR
+//
+//  This code is returned by the subsystem if it received a message with an illegal message type
+//  The first byte of the data is the error code. The rest of the data field depends on the error.
+
+#define	RTARDULINK_MESSAGE_ERROR        4                   // illegal message type response
+
+//  RTARDULINK_MESSAGE_ECHO
+//
+//  This message can be used to test link performance. The addressed subsystem just returns
+//  the entire message to the host.
+
+#define	RTARDULINK_MESSAGE_ECHO         5                   // echo message
 
 //  RTARDULINK_MESSAGE_CUSTOM
 //

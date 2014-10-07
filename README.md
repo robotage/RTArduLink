@@ -11,6 +11,9 @@ Check RTArduLink.pdf for details on how to use RTArduLink and the demo programs.
 
 ## Release history
 
+### October 6 2014 - V1.1.0
+Changed message address field to be 16 bits. Changed processCustomMessage callback signature to be consistent on host and subsystem sides. Incorporated the echo function into the subsystem standard library. Combined the Arduino examples into one sketch.
+
 ### October 6 2014 - V1.0.1
 Changed license to MIT. Fixed issues with tabs.
 

@@ -64,8 +64,8 @@ signals:
     void updateEchoStatus(int index, int port, int address, QString&, bool goodEcho);
 
 protected:
-    void processCustomMessage(RTARDULINKHOST_PORT *portInfo, int messageAddress,
-                        int messageType, unsigned char *data, int dataLength);
+    virtual void processCustomMessage(RTARDULINKHOST_PORT *portInfo, unsigned int messageAddress,
+                        unsigned char messageType, unsigned char messageParam, unsigned char *data, int dataLength);
     void processBackground();
 
 private:

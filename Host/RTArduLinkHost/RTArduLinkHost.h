@@ -123,13 +123,15 @@ public:
 //
 //  port            = subsystem port index to send the message on
 //  messageAddress  = the subsystem address of the target system
-//  messageType     = one of the valid messageType codes
+//  messageType     = the messageType codes
+//  messageParam    = a parameter for the type
 //  data            = a pointer to the data field (NULL if there isn't one)
-//  length          = length of data in data field (0 - 58)
+//  length          = length of data in data field (0 - 56)
 //
 //  Returns true if the message was sent, false if there was an error
 
-    bool sendMessage(int port, int messageAddress, int messageType, unsigned char *data, int length);
+    bool sendMessage(int port, unsigned int messageAddress, unsigned char messageType, 
+        unsigned char messageParam, unsigned char *data, int length);
 
 public slots:
     void readyRead();
@@ -177,8 +179,8 @@ protected:
 //  The parameters include a pointer to the RTARDULINKHOST_PORT on which
 //  the message was received and the various message fields
 
-    virtual void processCustomMessage(RTARDULINKHOST_PORT *portInfo, int messageAddress,
-                        int messageType, unsigned char *data, int dataLength);
+    virtual void processCustomMessage(RTARDULINKHOST_PORT *portInfo, unsigned int messageAddress,
+                        unsigned char messageType, unsigned char messageParam, unsigned char *data, int dataLength);
 
 //  processBackground() is called once per background loop and custom code can perform
 //  any regular background processing using this call

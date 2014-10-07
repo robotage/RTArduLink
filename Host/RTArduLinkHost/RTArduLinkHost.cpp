@@ -208,7 +208,7 @@ void RTArduLinkHost::readyRead()
 void RTArduLinkHost::processReceivedMessage(RTARDULINKHOST_PORT *portInfo)
 {
     RTARDULINK_MESSAGE *message;                            // a pointer to the message part of the frame
-    unsigned char address;
+    unsigned int address;
     RTARDULINKHOST_SUBSYSTEM *subsystem;
 
     emit RTArduLinkPortRX(portInfo->index);
@@ -220,7 +220,7 @@ void RTArduLinkHost::processReceivedMessage(RTARDULINKHOST_PORT *portInfo)
     }
 
     message = &(portInfo->RXFrameBuffer.message);           // get the message pointer
-    address = message->messageAddress;
+    address = RTArduLinkConvertUC2ToUInt(message->messageAddress);
     if (address == RTARDULINK_BROADCAST_ADDRESS) {
         qDebug() << "Received message with broadcast address";
         return;
@@ -253,11 +253,12 @@ void RTArduLinkHost::processReceivedMessage(RTARDULINKHOST_PORT *portInfo)
 
         case RTARDULINK_MESSAGE_DEBUG:
             message->data[RTARDULINK_DATA_MAX_LEN - 1] = 0;	// make sure zero terminated
-            qDebug() << QString("Debug message from address %1: %2").arg(address).arg((char *)message->data);
+            qDebug() << QString("Debug message from port %1, address %2: %3")
+                    .arg(portInfo->index).arg(address).arg((char *)message->data);
             break;
 
         default:
-            processCustomMessage(portInfo, message->messageAddress, message->messageType,
+            processCustomMessage(portInfo,address, message->messageType, message->messageParam,
                         message->data, portInfo->RXFrameBuffer.messageLength - RTARDULINK_MESSAGE_HEADER_LEN);
             break;
     }
@@ -283,7 +284,7 @@ void RTArduLinkHost::sendIdentifyRequest()
     }
 
     for (int i = 0; i < RTARDULINKHOST_MAX_PORTS; i++)
-        sendMessage(i, RTARDULINK_BROADCAST_ADDRESS, RTARDULINK_MESSAGE_IDENTITY, NULL, 0);
+        sendMessage(i, RTARDULINK_BROADCAST_ADDRESS, RTARDULINK_MESSAGE_IDENTITY, 0, NULL, 0);
 
     for (port = 0; port < RTARDULINKHOST_MAX_PORTS; port++) {
         subsystem = m_subsystem[port];
@@ -312,7 +313,7 @@ void RTArduLinkHost::sendPollRequest()
     }
 
     for (int i = 0; i < RTARDULINKHOST_MAX_PORTS; i++)
-        sendMessage(i, RTARDULINK_BROADCAST_ADDRESS, RTARDULINK_MESSAGE_POLL, NULL, 0);
+        sendMessage(i, RTARDULINK_BROADCAST_ADDRESS, RTARDULINK_MESSAGE_POLL, 0, NULL, 0);
 
     for (port = 0; port < RTARDULINKHOST_MAX_PORTS; port++) {
         subsystem = m_subsystem[port];
@@ -325,7 +326,8 @@ void RTArduLinkHost::sendPollRequest()
 //  qDebug() << "Sent poll";
 }
 
-bool RTArduLinkHost::sendMessage(int port, int messageAddress, int messageType, unsigned char *data, int length)
+bool RTArduLinkHost::sendMessage(int port, unsigned int messageAddress, unsigned char messageType, 
+                unsigned char messageParam, unsigned char *data, int length)
 {
     RTARDULINK_MESSAGE *message;
     qint64 bytesWritten;
@@ -346,8 +348,9 @@ bool RTArduLinkHost::sendMessage(int port, int messageAddress, int messageType, 
         return false;
     message = &(portInfo->TXFrameBuffer.message);
     portInfo->TXFrameBuffer.messageLength = length + RTARDULINK_MESSAGE_HEADER_LEN;
-    message->messageAddress = messageAddress;
+    RTArduLinkConvertIntToUC2(messageAddress, message->messageAddress);
     message->messageType = messageType;
+    message->messageParam = messageParam;
     if (data != NULL)
         memcpy(message->data, data, length);
     RTArduLinkSetChecksum(&portInfo->TXFrameBuffer);
@@ -392,5 +395,5 @@ void RTArduLinkHost::emitStatus(int port, int address)
 
 //  Dummy functions to satisfy linker if not overridden
 
-void RTArduLinkHost::processCustomMessage(RTARDULINKHOST_PORT *, int,
-    int, unsigned char *, int ) {}
+void RTArduLinkHost::processCustomMessage(RTARDULINKHOST_PORT *, unsigned int,
+    unsigned char, unsigned char, unsigned char *, int ) {}

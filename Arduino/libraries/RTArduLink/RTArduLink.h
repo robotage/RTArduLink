@@ -55,12 +55,14 @@ public:
     void begin(const char *identitySuffix);                 // should be called in setup() code
     void background();                                      // should be called once per loop()
     void sendDebugMessage(const char *debugMesssage);       // sends a debug message to the host port
-    void sendMessage(RTARDULINK_MESSAGE *message, int length);  // sends a message to the host port
+    void sendMessage(unsigned char messageType, unsigned char messageParam,
+        unsigned char *data, int length);                   // sends a message to the host port
 
 protected:
 //  These are functions that can be overridden
 
-    virtual void processCustomMessage(RTARDULINK_MESSAGE *message, int length) {};
+    virtual void processCustomMessage(unsigned char messageType, 
+        unsigned char messageParam, unsigned char *data, int dataLength) {}
 
     RTARDULINK_PORT m_ports[RTARDULINKHAL_MAX_PORTS];       // port array
     RTARDULINK_PORT *m_hostPort;                            // a link to the entry for the host port

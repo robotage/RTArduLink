@@ -48,15 +48,15 @@
 
 typedef struct
 {
-    QSlider slider;
-    QLabel sliderLabel;
+    QSlider *slider;
+    QLabel *sliderLabel;
     int sliderPos;
 } SERVO_CHANNEL;
 
 typedef struct
 {
-    QSlider slider;
-    QLabel sliderLabel;
+    QSlider *slider;
+    QLabel *sliderLabel;
     int sliderPos;
 } PWM_CHANNEL;
 
