@@ -151,7 +151,7 @@ signals:
 //  pollsIn     = number of polls received while active
 //  pollsOut    = number of polls send while active
 
-    void RTArduLinkStatus(int port, int address, bool active, char *identity, qint64 pollsIn, qint64 pollsOut);
+    void RTArduLinkStatus(int port, int address, bool active, QString identity, qint64 pollsIn, qint64 pollsOut);
 
 //  RTArduLinkPortOpen is emitted when a USB/serial port has been opened
 

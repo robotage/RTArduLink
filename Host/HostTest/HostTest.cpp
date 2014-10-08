@@ -54,8 +54,8 @@ HostTest::HostTest(QWidget *parent)
             m_row[port][address] = -1;
     m_nextRow = 0;
 
-    connect(m_link, SIGNAL(RTArduLinkStatus(int, int, bool, char *, qint64, qint64)), this,
-                    SLOT(RTArduLinkStatus(int, int, bool, char *, qint64, qint64)));
+    connect(m_link, SIGNAL(RTArduLinkStatus(int, int, bool, QString, qint64, qint64)), this,
+                    SLOT(RTArduLinkStatus(int, int, bool, QString, qint64, qint64)));
     connect(m_link, SIGNAL(RTArduLinkPortOpen(int)), SLOT(RTArduLinkPortOpen(int)));
     connect(m_link, SIGNAL(RTArduLinkPortClosed(int)), SLOT(RTArduLinkPortClosed(int)));
     connect(m_link, SIGNAL(RTArduLinkPortRX(int)), SLOT(RTArduLinkPortRX(int)));
@@ -145,7 +145,7 @@ void HostTest::timerEvent(QTimerEvent *)
     }
 }
 
-void HostTest::RTArduLinkStatus(int port, int address, bool active, char *identity, qint64 pollsIn, qint64 pollsOut)
+void HostTest::RTArduLinkStatus(int port, int address, bool active, QString identity, qint64 pollsIn, qint64 pollsOut)
 {
     int row;
 

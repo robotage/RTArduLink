@@ -11,6 +11,9 @@ Check RTArduLink.pdf for details on how to use RTArduLink and the demo programs.
 
 ## Release history
 
+### October 8 2014 - V1.1.1
+Changed signature of host RTArduLinkStatus signal in RTArduLinkHost.h to use QString instead of char *. Modified demo apps to use new signature.
+
 ### October 6 2014 - V1.1.0
 Changed message address field to be 16 bits. Changed processCustomMessage callback signature to be consistent on host and subsystem sides. Incorporated the echo function into the subsystem standard library. Combined the Arduino examples into one sketch.
 

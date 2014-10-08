@@ -47,8 +47,8 @@ HostDemo::HostDemo(QWidget *parent)
     m_link = new HostDemoClient(this);
     m_timerID = startTimer(100);
 
-    connect(m_link, SIGNAL(RTArduLinkStatus(int, int, bool, char *, qint64, qint64)), this,
-                    SLOT(RTArduLinkStatus(int, int, bool, char *, qint64, qint64)));
+    connect(m_link, SIGNAL(RTArduLinkStatus(int, int, bool, QString, qint64, qint64)), this,
+                    SLOT(RTArduLinkStatus(int, int, bool, QString, qint64, qint64)));
     connect(m_link, SIGNAL(RTArduLinkPortOpen(int)), SLOT(RTArduLinkPortOpen(int)));
     connect(m_link, SIGNAL(RTArduLinkPortClosed(int)), SLOT(RTArduLinkPortClosed(int)));
     connect(m_link, SIGNAL(RTArduLinkPortRX(int)), SLOT(RTArduLinkPortRX(int)));
@@ -181,7 +181,7 @@ void HostDemo::timerEvent(QTimerEvent *)
     updateComRXTX(m_comTXLabel, false);
 }
 
-void HostDemo::RTArduLinkStatus(int, int address, bool active, char *identity, qint64, qint64)
+void HostDemo::RTArduLinkStatus(int, int address, bool active, QString identity, qint64, qint64)
 {
     int selIndex;
 

@@ -73,7 +73,7 @@ public slots:
     void startButton();
     void stopButton();
     void echoButton();
-    void RTArduLinkStatus(int port, int address, bool active, char *identity, qint64 pollsIn, qint64 pollsOut);
+    void RTArduLinkStatus(int port, int address, bool active, QString identity, qint64 pollsIn, qint64 pollsOut);
     void RTArduLinkPortOpen(int port);
     void RTArduLinkPortClosed(int port);
     void RTArduLinkPortTX(int port);
