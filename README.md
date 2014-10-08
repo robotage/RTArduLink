@@ -11,6 +11,9 @@ Check RTArduLink.pdf for details on how to use RTArduLink and the demo programs.
 
 ## Release history
 
+### October 8 2014 - V1.1.2
+Fixed problem where first com port was lost in HostTest and HostDemo com port selectors.
+
 ### October 8 2014 - V1.1.1
 Changed signature of host RTArduLinkStatus signal in RTArduLinkHost.h to use QString instead of char *. Modified demo apps to use new signature.
 
