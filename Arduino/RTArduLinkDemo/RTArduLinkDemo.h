@@ -42,11 +42,16 @@ void setup();
 } // extern "C"
 #endif
 
+//    To use RTArduLink, create a sub-class like this:
+
 class RTArduLinkDemo : public RTArduLink
 {
 
 protected:
-     void processCustomMessage(unsigned char messageType, 
+
+    // this is a callback that the sketch handle received messages
+
+    void processCustomMessage(unsigned char messageType, 
         unsigned char messageParam, unsigned char *data, int dataLength);
 
 };

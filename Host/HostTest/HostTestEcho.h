@@ -58,7 +58,7 @@ public:
 public slots:
     void echoStart();
     void echoStop();
-    void RTArduLinkStatus(int port, int address, bool active, char *identity, qint64 pollsIn, qint64 pollsOut);
+    void RTArduLinkStatus(int port, int address, bool active, QString identity, qint64 pollsIn, qint64 pollsOut);
 
 signals:
     void updateEchoStatus(int index, int port, int address, QString&, bool goodEcho);

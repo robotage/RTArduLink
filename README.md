@@ -11,6 +11,9 @@ Check RTArduLink.pdf for details on how to use RTArduLink and the demo programs.
 
 ## Release history
 
+### October 9 2014 - V1.1.3
+Changed config EEPROM signature to be less likely to occur by accident.
+
 ### October 8 2014 - V1.1.2
 Fixed problem where first com port was lost in HostTest and HostDemo com port selectors.
 

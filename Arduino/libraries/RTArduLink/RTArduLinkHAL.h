@@ -58,9 +58,15 @@ typedef struct
 //  RTARDULINKHAL_EEPROM is the target-specific structure used to
 //  store configs in EEPROM
 
+//  Signature bytes indicating valid config
+
+#define RTARDULINKHAL_SIG0                  0x38          
+#define RTARDULINKHAL_SIG1                  0xc1           
+
 typedef struct
 {
-    char valid;                                             // 0xff = invalid, 0 = valid
+    unsigned char sig0;                                     // signature byte 0
+    unsigned char sig1;                                     // signature byte 1
     char identity[RTARDULINK_DATA_MAX_LEN];                 // identity string
     unsigned char portSpeed[RTARDULINKHAL_MAX_PORTS];       // port speed codes
     unsigned char hardwarePort[RTARDULINKHAL_MAX_PORTS];    // port number for hardware serial

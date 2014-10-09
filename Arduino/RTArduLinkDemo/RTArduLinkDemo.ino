@@ -143,6 +143,9 @@ void RTArduLinkDemo::processCustomMessage(unsigned char messageType, unsigned ch
         else
             response.inputValue[i] = false;
     }
+    
+    // This is how a message is sent back to the host
+    
     sendMessage(RTARDULINK_MESSAGE_CUSTOM + 1, 0, (unsigned char *)(&response), sizeof(RTARDULINKDEMO_RESPONSE));
 }
 

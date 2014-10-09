@@ -131,8 +131,8 @@ void HostTestEcho::echoStart()
             }
         }
     }
-    connect(this, SIGNAL(RTArduLinkStatus(int, int, bool, char *, qint64, qint64)),
-                    this, SLOT(RTArduLinkStatus(int, int, bool, char *, qint64, qint64)));
+    connect(this, SIGNAL(RTArduLinkStatus(int, int, bool, QString, qint64, qint64)),
+                    this, SLOT(RTArduLinkStatus(int, int, bool, QString, qint64, qint64)));
 
     m_echoRunning = true;
 }
@@ -144,7 +144,7 @@ void HostTestEcho::echoStop()
     m_echoRunning = false;
 }
 
-void HostTestEcho::RTArduLinkStatus(int port, int address, bool active, char *identity, qint64, qint64)
+void HostTestEcho::RTArduLinkStatus(int port, int address, bool active, QString identity, qint64, qint64)
 {
     HOSTECHO_DATA *echoData;
 

@@ -117,15 +117,17 @@ bool RTArduLinkHALAddHardwarePort(RTARDULINKHAL_PORT *port, long portSpeed, unsi
 
 bool RTArduLinkHALEEPROMValid()
 {
-    RTArduLinkHALConfig.valid = 0xff;                       // preset to invalid
     RTArduLinkHALEEPROMRead();                              // see what it really is
-    return RTArduLinkHALConfig.valid == 0;
+    return (RTArduLinkHALConfig.sig0 == RTARDULINKHAL_SIG0) && 
+        (RTArduLinkHALConfig.sig1 == RTARDULINKHAL_SIG1);
 }
 
 void RTArduLinkHALEEPROMDisplay()
 {
     Serial.println();
-    if (RTArduLinkHALConfig.valid != 0) {
+
+    if ((RTArduLinkHALConfig.sig0 != RTARDULINKHAL_SIG0) || 
+        (RTArduLinkHALConfig.sig1 != RTARDULINKHAL_SIG1)) {
         Serial.println("Invalid config");
         return;
     }
@@ -152,7 +154,8 @@ void RTArduLinkHALEEPROMDisplayPort(int index, bool suppress)
 
 void RTArduLinkHALEEPROMDefault()
 {
-    RTArduLinkHALConfig.valid = 0;
+    RTArduLinkHALConfig.sig0 = RTARDULINKHAL_SIG0;       // set to valid signature
+    RTArduLinkHALConfig.sig1 = RTARDULINKHAL_SIG1;                        
     strcpy(RTArduLinkHALConfig.identity, "RTArduLink_Arduino");
 
     RTArduLinkHALConfig.portSpeed[0] = RTARDULINK_PORT_SPEED_115200;
